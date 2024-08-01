@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Palette-ize It!</Title>
+  {% block styles %}
+  {{ bootstrap.load_css() }}
+  {% endblock %}
+</head>
+
+<body>
+  {% include "header.html" %}
+  {% block content %}
+  {% endblock %}
+  {% include "footer.html" %}
+  {% block scripts %}
+  {% endblock %}
+</body>
+
+</html>
