@@ -1,18 +1,18 @@
 {% from 'bootstrap5/utils.html' import render_icon %}
 <nav class="navbar bg-primary" data-bs-theme="dark">
   <div class="container d-flex flex-wrap">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="{{ url_for('homepage') }}">
       {{ render_icon("palette-fill", size="2rem") }}
       <span class="px-3 navbar-brand"> Palette-ize It! </span>
     </a>
     <ul class="nav nav-pills">
       <li class="nav-item">
-        <a class="nav-link active" href="#">Home
-          <span class="visually-hidden">(current)</span>
+        <a class="nav-link {% if current_page == 'home': %} active {% endif %}" href="{{ url_for('homepage') }}"> Home
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Get Started</a>
+        <a class="nav-link {% if current_page == 'generate': %} active {% endif %}"
+          href="{{ url_for('generate_palette') }}">Get Started</a>
       </li>
     </ul>
   </div>
