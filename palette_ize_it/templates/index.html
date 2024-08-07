@@ -3,15 +3,14 @@
 {% block content %}
 <div class="container col-xxl-8 px-4 py-5">
   <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
-    <div class="col-10 col-sm-8 col-lg-6">
-      <img src="example_palette.png" class="d-block mx-lg-auto img-fluid" alt="example output" width="700" height="500"
-        loading="lazy">
+    <div class="col-10 col-sm-8 col-lg-7">
+      <img src={{ url_for('static', filename='/assets/img/example_output.png')}} class="d-block img-fluid" alt="example output" loading="lazy">
     </div>
-    <div class="col-lg-6">
+    <div class="col-lg-5">
       <h1 class="display-5 fw-bold text-body lh-1 mb-3">Custom palettes at your fingertips</h1>
       <p class="lead">Creating a custom palette for your next project is as easy as uploading an inspiring image.</p>
       <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-        <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Upload a picture to Start</button>
+        <a type="button" href={{url_for('generate_palette')}} class="btn btn-primary btn-lg px-4 me-md-2">Upload a picture to begin</a>
       </div>
     </div>
   </div>
