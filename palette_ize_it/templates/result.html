@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block content %}
+<div class="container col-xxl-8 px-4 py-5">
+  <div class="row align-items-top g-5 py-3" style="height:50vh">
+    <div class="col-7">
+      <img src="data:image/jpeg;base64,{{ img_data }}" class="img-fluid border rounded-3 shadow-lg mb-4" alt="Example image" style="height:auto; width:auto" loading="lazy">
+    </div>
+    <div class="col-5" style="display:grid; grid-template-columns: repeat(auto-fill,minmax(105px,105px))">
+      {% for color in colors %}
+      <button onclick="copyHex('{{color}}')" type="button" class="text-secondary btn border-0 p-2" style="background:#{{ color }}; text-align:center; width:100px; height:100px"> 
+        #{{ color }}
+      </button>   
+      {% endfor %}
+    </div>
+  </div>
+  <div class="row my-4">
+    <div class="container">
+      <button type="button" class="btn btn-primary" onclick="copyAllHex({{colors}})">
+        Copy all colors
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function copyHex(hex_color) {
+    alert("Copied the text: #" + String(hex_color));
+    return navigator.clipboard.writeText('#' + String(hex_color));
+  };
+  function copyAllHex(hex_colors) {
+    alert("Copied all colors");
+    var colors_list = hex_colors.map(hex => { return '#' + String(hex)})
+    return navigator.clipboard.writeText(colors_list);
+  };
+</script>
+{% endblock %}
+

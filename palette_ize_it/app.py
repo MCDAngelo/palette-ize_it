@@ -1,22 +1,23 @@
+import base64
 import os
-from pathlib import Path
+from io import BytesIO
 
+import cv2 as cv
+import numpy as np
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileRequired
 from flask_wtf.csrf import CSRFProtect
+from flask_wtf.file import FileField, FileRequired
 from PIL import Image
-from werkzeug.utils import secure_filename
+from sklearn.cluster import KMeans
 from wtforms import IntegerField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
-
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("APP_SECRET_KEY")
-Path(app.instance_path).mkdir(parents=True, exist_ok=True)
 bootstrap = Bootstrap5(app)
 app.config["BOOTSTRAP_BOOTSWATCH_THEME"] = "quartz"
 csrf = CSRFProtect()
@@ -50,20 +51,28 @@ def generate_palette():
     if form.validate_on_submit():
         f = form.image_file.data
         if allowed_file(f.filename):
-            filename = secure_filename(f.filename)
-            file_path = os.path.join(app.instance_path, filename)
-            f.save(file_path)
-            image_as_array(file_path)
-            return render_template("generate.html", current_page="generate", form=form)
-        else:
-            print("oops")
-
+            img = Image.open(f.stream)
+            with BytesIO() as buf:
+                img.save(buf, "jpeg")
+                image_bytes = buf.getvalue()
+            n_colors = n_colors_kmeans(image_bytes, form.n_colors.data)
+            encoded_string = base64.b64encode(image_bytes).decode()
+            return render_template(
+                "result.html",
+                current_page="generate",
+                img_data=encoded_string,
+                colors=n_colors,
+            )
     return render_template("generate.html", current_page="generate", form=form)
 
 
-# Process img file:
-def image_as_array(filename):
-    img = Image.open(filename)
-    print(img.format)
-    print(img.size)
-    print(img.mode)
+def n_colors_kmeans(buf, n):
+    img_np = np.frombuffer(buf, np.uint8)
+    img = cv.imdecode(img_np, cv.IMREAD_COLOR)
+    img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+    clt = KMeans(n_clusters=n)
+    clt.fit(img.reshape(-1, 3))
+    centers = [[int(v.item()) for v in c] for c in clt.cluster_centers_]
+    palette_rgb = [tuple(c) for c in centers]
+    palette = ["".join([f"{x:02x}" for x in color]) for color in palette_rgb]
+    return palette
